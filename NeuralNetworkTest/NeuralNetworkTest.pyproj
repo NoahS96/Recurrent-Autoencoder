@@ -25,10 +25,6 @@
     <Compile Include="Network_Analyzer.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="NeuralNetworkTest.py" />
-    <Compile Include="Normalizer.py">
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="CondaEnv|CondaEnv|snake" />
