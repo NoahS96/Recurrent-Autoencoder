@@ -1,4 +1,4 @@
-# NeuralNetworkTest
+# Recurrent-Autoencoder
 
 A recurrent autencoder example which uses the dataset found here: 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;https://sites.google.com/site/dspham/downloads/network-traffic-datasets     
