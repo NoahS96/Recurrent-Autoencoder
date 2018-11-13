@@ -9,7 +9,6 @@ import tensorflow as tf
 from sklearn import preprocessing
 
 # Parameters
-#column_names = {"time":0, "intertime":1, "arrival_time":2, "packet_length":3}
 N_EPOCHS = 50
 BLOCK_SIZE = 25
 N_TESTS = 8
@@ -50,19 +49,15 @@ test_dataset = test_dataset[: -(test_dataset.shape[0] % BLOCK_SIZE)]
 test_dataset = test_dataset.reshape(int(test_dataset.shape[0]/BLOCK_SIZE), BLOCK_SIZE, 4)
 
 # Create the network model
-# TODO: Reshape encoding and decoding layers to use LSTM
 print("Building Network Model...")
 input_dimension = train_dataset.shape[1:]
 encoding_dimension = (int(input_dimension[0]/2), int(input_dimension[1]/2))
 input_layer = keras.layers.Input(shape=input_dimension)
 encoder = keras.layers.LSTM(encoding_dimension[1], activation=tf.nn.tanh, return_sequences=True)(input_layer)
-#encoder = keras.layers.LSTM(input_dimension[1], activation=tf.nn.tanh, return_sequences=True)(input_layer)
-#encoder = keras.layers.Dropout(0.33)(encoder)
-#encoder = keras.layers.LSTM(encoding_dimension[1], activation=tf.nn.tanh, return_sequences=True)(encoder)
 decoder = keras.layers.LSTM(input_dimension[1], activation=tf.nn.tanh, return_sequences=True)(encoder)
-#decoder = keras.layers.LSTM(input_dimension[1], activation=tf.nn.tanh, return_sequences=True)(decoder)
 autoencoder = keras.Model(inputs=input_layer, outputs=decoder)
 
+# Non-Recurrent model
 #input_dimension = train_dataset.shape[1]
 #encoding_dimension = int(input_dimension/2)
 #input_layer = keras.layers.Input(shape=(input_dimension,))
@@ -83,10 +78,6 @@ history = autoencoder.fit(train_dataset, train_dataset,
                           shuffle=True,
                           validation_data=(test_dataset,test_dataset),
                           verbose=1).history
-# Make predictions and display error
-predictions = autoencoder.predict(test_dataset)
-mae = np.sum(np.absolute(test_dataset - predictions))
-print("MAE {}".format(mae))
 
 # Round 2: Train'
 print("\nTraining Round 2")
