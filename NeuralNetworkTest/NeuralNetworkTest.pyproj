@@ -4,13 +4,14 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>4f497a43-36ec-4400-aa03-dadda40081b9</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>NeuralNetworkTest.py</StartupFile>
+    <StartupFile>Network_Analyzer.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>NeuralNetworkTest</Name>
     <RootNamespace>NeuralNetworkTest</RootNamespace>
+    <InterpreterId>CondaEnv|CondaEnv|snake</InterpreterId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -21,7 +22,16 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Network_Analyzer.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="NeuralNetworkTest.py" />
+    <Compile Include="Normalizer.py">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="CondaEnv|CondaEnv|snake" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
