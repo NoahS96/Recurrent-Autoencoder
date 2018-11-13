@@ -12,6 +12,7 @@ from sklearn import preprocessing
 #column_names = {"time":0, "intertime":1, "arrival_time":2, "packet_length":3}
 N_EPOCHS = 50
 BLOCK_SIZE = 25
+N_TESTS = 8
 avg_norm_err = 0
 avg_mal_err = 0
 
@@ -37,18 +38,15 @@ train_dataset2 = preprocessing.Normalizer().fit_transform(train_dataset2)
 test_dataset = preprocessing.MinMaxScaler().fit_transform(test_dataset.values)
 test_dataset = preprocessing.Normalizer().fit_transform(test_dataset)
 
-# Reshape to 3D
+# Reshape to 3D (Shave off remainders of dataset if not all data can fit fully into one block)
 print("Reshaping data to 3D...")
-while (train_dataset.shape[0] % 50 != 0):
-    train_dataset = train_dataset[:-1]
+train_dataset = train_dataset[: -(train_dataset.shape[0] % BLOCK_SIZE)]
 train_dataset = train_dataset.reshape(int(train_dataset.shape[0]/BLOCK_SIZE), BLOCK_SIZE, 4)
 
-while (train_dataset2.shape[0] % 50 != 0):
-    train_dataset2 = train_dataset2[:-1]
+train_dataset2 = train_dataset2[: -(train_dataset2.shape[0] % BLOCK_SIZE)]
 train_dataset2 = train_dataset2.reshape(int(train_dataset2.shape[0]/BLOCK_SIZE), BLOCK_SIZE, 4)
 
-while (test_dataset.shape[0] % 50 != 0):
-    test_dataset = test_dataset[:-1]
+test_dataset = test_dataset[: -(test_dataset.shape[0] % BLOCK_SIZE)]
 test_dataset = test_dataset.reshape(int(test_dataset.shape[0]/BLOCK_SIZE), BLOCK_SIZE, 4)
 
 # Create the network model
@@ -103,33 +101,31 @@ history = autoencoder.fit(train_dataset2, train_dataset2,
 norm_string = "C:\\Users\\Andrew\\Desktop\\Datasets\\Normal\\Skyhook\\split\\AllTraffic_chunk{}.csv"
 mal_string = "C:\\Users\\Andrew\\Desktop\\Datasets\\Malicious\\Skyhook\\split\\DoS_Traffic_chunk{}.csv"
 # Norm Test
-for i in range(1,5):
+for i in range(1,N_TESTS):
     build_string = norm_string.format(i)
     dataset = pd.read_csv(build_string, header=[0,1,2,3])
     dataset = preprocessing.MinMaxScaler().fit_transform(dataset.values)
     dataset = preprocessing.Normalizer().fit_transform(dataset)
-    while (dataset.shape[0] % 50 != 0):
-        dataset = dataset[:-1]
+    dataset = dataset[: -(dataset.shape[0] % BLOCK_SIZE)]
     dataset = dataset.reshape(int(dataset.shape[0]/BLOCK_SIZE), BLOCK_SIZE, 4)
 
     predictions = autoencoder.predict(dataset)
     mae = np.sum(np.absolute(dataset - predictions))
     avg_norm_err += np.power(mae,2)
     print("Norm MAE {} : {}".format(i, mae))
-print("Average Normal MAE {}\n".format(np.sqrt(avg_norm_err/5)))
+print("Squared Average Normal MAE {}\n".format(np.sqrt(avg_norm_err/N_TESTS)))
 
 # Mal Test
-for i in range(1,5):
+for i in range(1,N_TESTS):
     build_string = mal_string.format(i)
     dataset = pd.read_csv(build_string, header=[0,1,2,3])
     dataset = preprocessing.MinMaxScaler().fit_transform(dataset.values)
     dataset = preprocessing.Normalizer().fit_transform(dataset)
-    while (dataset.shape[0] % 50 != 0):
-        dataset = dataset[:-1]
+    dataset = dataset[: -(dataset.shape[0] % BLOCK_SIZE)]
     dataset = dataset.reshape(int(dataset.shape[0]/BLOCK_SIZE), BLOCK_SIZE, 4)
 
     predictions = autoencoder.predict(dataset)
     mae = np.sum(np.absolute(dataset - predictions))
     print("Mal MAE {} : {}".format(i, mae))
     avg_mal_err += np.power(mae,2)
-print("Average Malicious MAE {}\n".format(np.sqrt(avg_mal_err/5)))
+print("Squared Average Malicious MAE {}\n".format(np.sqrt(avg_mal_err/N_TESTS)))
